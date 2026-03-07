@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ClipboardList, Link, HelpCircle } from 'lucide-react'
 
 export default function Home() {
   return (
@@ -18,7 +19,7 @@ export default function Home() {
         <Card className="mb-6 border-gray-800 bg-gray-900">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              <span>📋</span>
+              <ClipboardList className="h-5 w-5" />
               인보이스 조회 방법
             </CardTitle>
           </CardHeader>
@@ -52,7 +53,7 @@ export default function Home() {
         <Card className="mb-6 border-gray-800 bg-gray-900">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              <span>🔗</span>
+              <Link className="h-5 w-5" />
               인보이스 URL 예시
             </CardTitle>
           </CardHeader>
@@ -71,7 +72,7 @@ export default function Home() {
         <Card className="border-gray-800 bg-gray-900">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              <span>❓</span>
+              <HelpCircle className="h-5 w-5" />
               문제가 있나요?
             </CardTitle>
           </CardHeader>
