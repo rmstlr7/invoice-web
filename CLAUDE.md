@@ -27,5 +27,6 @@
 
 - [README.md](./README.md) - 설치 및 사용 가이드
 - [PRD (제품 요구사항)](./docs/PRD.md) - 기능 명세 및 요구사항
+- [ROADMAP (로드맵)](./docs/ROADMAP.md) - 개발 로드맵
 
 💡 **상세 규칙은 위 개발 가이드 문서들을 참조하세요**
