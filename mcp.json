@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["@anthropic-ai/mcp-context7"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["@anthropic-ai/mcp-sequential-thinking"]
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": ["@anthropic-ai/mcp-shadcn"]
+    }
+  }
+}
