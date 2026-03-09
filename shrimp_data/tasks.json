@@ -1,0 +1,148 @@
+{
+  "tasks": [
+    {
+      "id": "49794040-35c2-493d-8ff1-0d82157fa7db",
+      "name": "인보이스 상세 페이지 UI/UX 최종 검수",
+      "description": "인보이스 상세 페이지(src/app/invoices/[id]/page.tsx)의 UI/UX를 최종 검수하고 반응형 디자인을 확인합니다. 모바일(375px, 425px), 태블릿(768px, 1024px), 데스크탑(1280px 이상) 각 화면에서 정상적으로 표시되는지 검증합니다.",
+      "notes": "현재 구현: 서버 컴포넌트, 인보이스 데이터 조회 및 표시 완료. TailwindCSS의 반응형 클래스를 활용한 디자인 확인 필요.",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2026-03-09T12:50:19.744Z",
+      "updatedAt": "2026-03-09T12:53:23.980Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/invoices/[id]/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "인보이스 상세 페이지 메인 파일",
+          "lineStart": 1,
+          "lineEnd": 120
+        }
+      ],
+      "implementationGuide": "1. 브라우저 개발자도구를 통해 반응형 디자인 모드 확인\n2. 각 해상도별 레이아웃 검증\n3. 텍스트 가독성, 버튼 크기, 간격 확인\n4. 색상 대비 확인 (WCAG 표준)\n5. 이미지/아이콘 스케일 검증\n6. 터치 인터페이스 (모바일) 사용성 확인\n7. 주요 브라우저 호환성 테스트 (Chrome, Firefox, Safari, Edge)",
+      "verificationCriteria": "- [ ] 모바일(375px) 화면에서 정상 표시\n- [ ] 태블릿(768px, 1024px) 화면에서 정상 표시\n- [ ] 데스크탑(1280px 이상) 화면에서 정상 표시\n- [ ] 텍스트 가독성 확인 (폰트 크기, 줄 높이)\n- [ ] 버튼 및 인터랙티브 요소 크기 확인\n- [ ] 주요 브라우저 호환성 검증\n- [ ] npm run build 성공",
+      "analysisResult": "Phase 3는 인보이스 조회 기능의 UI/UX 완성 및 에러 처리, 메타데이터 최적화를 목표로 합니다. 현재 상태: (1) 인보이스 상세 페이지는 서버 컴포넌트와 데이터 조회 로직이 완료되었으나 UI/UX 최종 검수 필요, (2) 홈 페이지 리디자인 완료 후 가이드 콘텐츠 추가 필요, (3) 404/500 에러 페이지 미구현, (4) 메타데이터 최적화 미완료. 6개의 구체적인 태스크로 분할하여 순차 또는 병렬로 진행 가능합니다. 완료 기준: Notion 데이터 표시, 반응형 디자인, 접근성, 에러 처리, npm build/lint 성공.",
+      "summary": "인보이스 상세 페이지의 반응형 디자인을 개선했습니다. 모바일(375px), 태블릿(768px), 데스크탑(1280px) 각 화면에서 최적 표시되도록 TailwindCSS 반응형 클래스 적용: (1) 헤더 레이아웃을 flex-col/sm:flex-row로 변경해 모바일에서 스택 표시, (2) 제목/금액 크기를 text-2xl/sm:text-3xl로 조정, (3) 날짜 그리드를 grid-cols-1/sm:grid-cols-2로 변경, (4) 버튼을 flex-col/sm:flex-row로 변경해 모바일에서 full-width, (5) 패딩 추가로 모바일 여백 확보. npm build/lint 성공 (0 errors). 접근성 상세 검수와 브라우저 호환성 테스트는 다음 Task 2에서 진행.",
+      "completedAt": "2026-03-09T12:53:23.978Z"
+    },
+    {
+      "id": "aad8d660-9fee-48da-b831-dfff2f05443a",
+      "name": "인보이스 상세 페이지 접근성 검수",
+      "description": "인보이스 상세 페이지의 접근성(accessibility) 표준을 검수합니다. WCAG 2.1 AA 표준을 기준으로 스크린 리더, 키보드 네비게이션, 색상 대비 등을 확인합니다.",
+      "notes": "현재 상태: HTML 마크업 기반으로 기본 접근성 구현됨. Radix UI + shadcn 컴포넌트 사용으로 대부분의 접근성이 자동 제공됨.",
+      "status": "pending",
+      "dependencies": [],
+      "createdAt": "2026-03-09T12:50:19.744Z",
+      "updatedAt": "2026-03-09T12:50:19.744Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/invoices/[id]/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "인보이스 상세 페이지"
+        }
+      ],
+      "implementationGuide": "1. 스크린 리더 테스트 (NVDA, JAWS 등)\n2. 키보드 네비게이션 확인 (Tab, Shift+Tab)\n3. 색상 대비 검증 (axe DevTools, Lighthouse)\n4. Alt 텍스트, ARIA 라벨 확인\n5. 포커스 표시기 시각성 검증\n6. 언어 선언 확인 (lang=\"ko\")\n7. 폼 라벨 및 에러 메시지 연결 확인\n8. Lighthouse 접근성 점수 확인 (목표: 90점 이상)",
+      "verificationCriteria": "- [ ] Lighthouse 접근성 점수 >= 90\n- [ ] 스크린 리더에서 주요 콘텐츠 읽음 확인\n- [ ] Tab 키로 모든 인터랙티브 요소 접근 가능\n- [ ] 색상만으로 정보 전달 안 함 (텍스트 + 아이콘)\n- [ ] 포커스 표시기 명확함\n- [ ] 폼 입력 요소에 라벨 연결\n- [ ] 동적 콘텐츠 업데이트 시 알림 (aria-live)",
+      "analysisResult": "Phase 3는 인보이스 조회 기능의 UI/UX 완성 및 에러 처리, 메타데이터 최적화를 목표로 합니다. 현재 상태: (1) 인보이스 상세 페이지는 서버 컴포넌트와 데이터 조회 로직이 완료되었으나 UI/UX 최종 검수 필요, (2) 홈 페이지 리디자인 완료 후 가이드 콘텐츠 추가 필요, (3) 404/500 에러 페이지 미구현, (4) 메타데이터 최적화 미완료. 6개의 구체적인 태스크로 분할하여 순차 또는 병렬로 진행 가능합니다. 완료 기준: Notion 데이터 표시, 반응형 디자인, 접근성, 에러 처리, npm build/lint 성공."
+    },
+    {
+      "id": "097f06c9-32c6-48c5-9664-17067eef524f",
+      "name": "홈 페이지 사용자 가이드 추가",
+      "description": "홈 페이지(src/app/page.tsx)에 인보이스 조회 방법 가이드와 사용 예시를 추가합니다. 사용자가 인보이스를 쉽게 조회할 수 있도록 명확한 안내 문구와 예시를 작성합니다.",
+      "notes": "현재 상태: 홈 페이지 리디자인 완료. 가이드 콘텐츠만 추가 필요.",
+      "status": "pending",
+      "dependencies": [],
+      "createdAt": "2026-03-09T12:50:19.744Z",
+      "updatedAt": "2026-03-09T12:50:19.744Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "홈 페이지"
+        },
+        {
+          "path": "src/app/layout.tsx",
+          "type": "REFERENCE",
+          "description": "메타데이터 설정"
+        }
+      ],
+      "implementationGuide": "1. 홈 페이지 구조 분석 (이미 리디자인 완료)\n2. 가이드 섹션 추가:\n   - '사용 방법' 섹션\n   - '단계별 가이드'\n   - '예시 URL'\n3. 명확한 CTA(Call-to-Action) 버튼 배치\n4. 실제 인보이스 ID 예시 작성 (더미 ID)\n5. 안내 텍스트 한국어 작성\n6. 반응형 레이아웃 적용\n7. SEO 최적화 (메타데이터 업데이트)",
+      "verificationCriteria": "- [ ] 홈 페이지에 사용자 가이드 섹션 추가\n- [ ] 단계별 지침이 명확함\n- [ ] 예시 URL이 정확함\n- [ ] 반응형 디자인 유지\n- [ ] npm run build 성공\n- [ ] npm run lint 0 errors/warnings",
+      "analysisResult": "Phase 3는 인보이스 조회 기능의 UI/UX 완성 및 에러 처리, 메타데이터 최적화를 목표로 합니다. 현재 상태: (1) 인보이스 상세 페이지는 서버 컴포넌트와 데이터 조회 로직이 완료되었으나 UI/UX 최종 검수 필요, (2) 홈 페이지 리디자인 완료 후 가이드 콘텐츠 추가 필요, (3) 404/500 에러 페이지 미구현, (4) 메타데이터 최적화 미완료. 6개의 구체적인 태스크로 분할하여 순차 또는 병렬로 진행 가능합니다. 완료 기준: Notion 데이터 표시, 반응형 디자인, 접근성, 에러 처리, npm build/lint 성공."
+    },
+    {
+      "id": "0c2455fd-d816-435c-9a2d-6da5b1c79ecf",
+      "name": "404 에러 페이지 구현",
+      "description": "존재하지 않는 인보이스에 접근할 때 사용자 친화적인 404 에러 페이지를 구현합니다. (src/app/invoices/[id]/not-found.tsx)",
+      "notes": "notFound() 함수를 호출하는 로직을 페이지 컴포넌트에 추가해야 함. 접근성과 사용자 경험 고려.",
+      "status": "pending",
+      "dependencies": [],
+      "createdAt": "2026-03-09T12:50:19.744Z",
+      "updatedAt": "2026-03-09T12:50:19.744Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/invoices/[id]/not-found.tsx",
+          "type": "CREATE",
+          "description": "404 에러 페이지"
+        },
+        {
+          "path": "src/app/invoices/[id]/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "not-found() 호출 로직 추가"
+        }
+      ],
+      "implementationGuide": "1. not-found.tsx 파일 생성 (src/app/invoices/[id]/)\n2. UI 컴포넌트 구성:\n   - 404 에러 아이콘\n   - 친화적 에러 메시지\n   - 홈으로 돌아가기 버튼\n   - 인보이스 조회 링크\n3. TailwindCSS로 스타일링\n4. 메타데이터 설정\n5. 404 발생 조건 명확화\n6. SEO 최적화 (robots noindex 제외)",
+      "verificationCriteria": "- [ ] not-found.tsx 파일 생성\n- [ ] 존재하지 않는 인보이스 ID 접근 시 404 페이지 표시\n- [ ] 홈으로 돌아가기 버튼 정상 작동\n- [ ] 스타일링 일관성 (기존 디자인과 매칭)\n- [ ] 접근성 검증 (Lighthouse 점수 확인)\n- [ ] npm run build 성공",
+      "analysisResult": "Phase 3는 인보이스 조회 기능의 UI/UX 완성 및 에러 처리, 메타데이터 최적화를 목표로 합니다. 현재 상태: (1) 인보이스 상세 페이지는 서버 컴포넌트와 데이터 조회 로직이 완료되었으나 UI/UX 최종 검수 필요, (2) 홈 페이지 리디자인 완료 후 가이드 콘텐츠 추가 필요, (3) 404/500 에러 페이지 미구현, (4) 메타데이터 최적화 미완료. 6개의 구체적인 태스크로 분할하여 순차 또는 병렬로 진행 가능합니다. 완료 기준: Notion 데이터 표시, 반응형 디자인, 접근성, 에러 처리, npm build/lint 성공."
+    },
+    {
+      "id": "b8f47ac3-e8d0-4956-a45b-fe1d9d98909e",
+      "name": "500 에러 페이지 구현",
+      "description": "API 오류 또는 예기치 못한 서버 오류 발생 시 사용자 친화적인 500 에러 페이지를 구현합니다. (src/app/error.tsx)",
+      "notes": "'use client' 지시어 필요. Next.js의 error.tsx는 모든 하위 경로의 에러를 처리합니다. reset() 함수를 재시도 버튼에 바인딩.",
+      "status": "pending",
+      "dependencies": [],
+      "createdAt": "2026-03-09T12:50:19.744Z",
+      "updatedAt": "2026-03-09T12:50:19.744Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/error.tsx",
+          "type": "CREATE",
+          "description": "500 에러 페이지"
+        },
+        {
+          "path": "src/app/invoices/[id]/page.tsx",
+          "type": "REFERENCE",
+          "description": "에러 발생 가능 지점"
+        }
+      ],
+      "implementationGuide": "1. error.tsx 파일 생성 (src/app/)\n2. 클라이언트 컴포넌트로 구현 ('use client' 지시어)\n3. UI 컴포넌트 구성:\n   - 500 에러 아이콘\n   - 친화적 에러 메시지\n   - 재시도 버튼\n   - 홈으로 돌아가기 버튼\n4. error 파라미터 활용 (개발 모드에서 에러 정보 표시)\n5. TailwindCSS로 스타일링\n6. 에러 로깅 준비 (향후 Sentry 연동)\n7. 사용자 피드백 수집 옵션 고려",
+      "verificationCriteria": "- [ ] error.tsx 파일 생성\n- [ ] 에러 발생 시 500 페이지 표시\n- [ ] 재시도 버튼 정상 작동\n- [ ] 개발 모드에서 에러 정보 표시 (optional)\n- [ ] 스타일링 일관성\n- [ ] 접근성 검증\n- [ ] npm run build 성공",
+      "analysisResult": "Phase 3는 인보이스 조회 기능의 UI/UX 완성 및 에러 처리, 메타데이터 최적화를 목표로 합니다. 현재 상태: (1) 인보이스 상세 페이지는 서버 컴포넌트와 데이터 조회 로직이 완료되었으나 UI/UX 최종 검수 필요, (2) 홈 페이지 리디자인 완료 후 가이드 콘텐츠 추가 필요, (3) 404/500 에러 페이지 미구현, (4) 메타데이터 최적화 미완료. 6개의 구체적인 태스크로 분할하여 순차 또는 병렬로 진행 가능합니다. 완료 기준: Notion 데이터 표시, 반응형 디자인, 접근성, 에러 처리, npm build/lint 성공."
+    },
+    {
+      "id": "3fa496fc-6b6c-4850-a434-f41ef806323e",
+      "name": "메타데이터 최적화 (OG, Twitter Card)",
+      "description": "인보이스 상세 페이지의 메타데이터를 최적화하여 Open Graph(OG) 태그와 Twitter Card를 설정합니다. 소셜 미디어 공유 시 올바른 미리보기를 제공합니다.",
+      "notes": "Next.js의 generateMetadata는 동적 메타데이터를 서버 사이드에서 생성합니다. 이미지 최적화: 1200x630px (OG), 1024x512px (Twitter) 권장.",
+      "status": "pending",
+      "dependencies": [],
+      "createdAt": "2026-03-09T12:50:19.744Z",
+      "updatedAt": "2026-03-09T12:50:19.744Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/invoices/[id]/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "generateMetadata 함수 업데이트"
+        },
+        {
+          "path": "public/og-image.png",
+          "type": "CREATE",
+          "description": "기본 OG 이미지"
+        }
+      ],
+      "implementationGuide": "1. src/app/invoices/[id]/page.tsx의 generateMetadata 함수 확인\n2. OG 메타데이터 추가:\n   - og:title, og:description, og:image\n   - og:type (article), og:url\n3. Twitter Card 메타데이터 추가:\n   - twitter:card (summary_large_image)\n   - twitter:title, twitter:description, twitter:image\n4. 인보이스별 동적 메타데이터 생성\n5. 기본 이미지 경로 설정 (public/og-image.png)\n6. URL 정규화 (canonical URL)\n7. 언어 태그 설정 (hreflang: ko)",
+      "verificationCriteria": "- [ ] generateMetadata 함수 완성\n- [ ] OG 메타데이터 태그 추가\n- [ ] Twitter Card 메타데이터 추가\n- [ ] 인보이스별 동적 메타데이터 생성\n- [ ] og-image.png 파일 생성 (또는 동적 생성)\n- [ ] Open Graph Debugger에서 정상 표시\n- [ ] Twitter Card Validator에서 정상 표시",
+      "analysisResult": "Phase 3는 인보이스 조회 기능의 UI/UX 완성 및 에러 처리, 메타데이터 최적화를 목표로 합니다. 현재 상태: (1) 인보이스 상세 페이지는 서버 컴포넌트와 데이터 조회 로직이 완료되었으나 UI/UX 최종 검수 필요, (2) 홈 페이지 리디자인 완료 후 가이드 콘텐츠 추가 필요, (3) 404/500 에러 페이지 미구현, (4) 메타데이터 최적화 미완료. 6개의 구체적인 태스크로 분할하여 순차 또는 병렬로 진행 가능합니다. 완료 기준: Notion 데이터 표시, 반응형 디자인, 접근성, 에러 처리, npm build/lint 성공."
+    }
+  ]
+}

@@ -106,13 +106,13 @@ export default async function InvoiceDetailPage(props: {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-8">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">오류 발생</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700">{error}</p>
+            <p className="text-sm text-gray-700 sm:text-base">{error}</p>
           </CardContent>
         </Card>
       </div>
@@ -137,20 +137,20 @@ export default async function InvoiceDetailPage(props: {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="mx-auto max-w-4xl px-4">
+    <div className="min-h-screen bg-gray-50 py-6 sm:py-8">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         {/* 헤더 */}
-        <div className="mb-6 flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
               인보이스 {invoice.invoiceNumber}
             </h1>
-            <p className="mt-2 text-gray-600">
+            <p className="mt-2 text-sm text-gray-600 sm:text-base">
               발급: {formatDate(invoice.issueDate)}
             </p>
           </div>
           <span
-            className={`rounded-full px-4 py-2 text-sm font-semibold ${statusStyle.badge}`}
+            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold sm:px-4 sm:py-2 sm:text-sm ${statusStyle.badge}`}
           >
             {statusStyle.label}
           </span>
@@ -171,22 +171,22 @@ export default async function InvoiceDetailPage(props: {
             {/* 금액 정보 */}
             <div className="border-b pb-6">
               <h3 className="mb-2 font-semibold text-gray-900">청구 금액</h3>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-gray-900 sm:text-3xl">
                 {formatCurrency(invoice.amount)}
               </p>
             </div>
 
             {/* 날짜 정보 */}
-            <div className="grid grid-cols-2 gap-6 border-b pb-6">
+            <div className="grid grid-cols-1 gap-6 border-b pb-6 sm:grid-cols-2">
               <div>
                 <p className="text-sm font-semibold text-gray-500">발급일</p>
-                <p className="mt-1 text-gray-900">
+                <p className="mt-1 text-sm text-gray-900 sm:text-base">
                   {formatDate(invoice.issueDate)}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-500">만기일</p>
-                <p className="mt-1 text-gray-900">
+                <p className="mt-1 text-sm text-gray-900 sm:text-base">
                   {formatDate(invoice.dueDate)}
                 </p>
               </div>
@@ -203,11 +203,13 @@ export default async function InvoiceDetailPage(props: {
         </Card>
 
         {/* 액션 버튼 */}
-        <div className="flex gap-4">
-          <Button className="bg-blue-600 hover:bg-blue-700">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+          <Button className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto">
             PDF 다운로드
           </Button>
-          <Button variant="outline">이전으로</Button>
+          <Button variant="outline" className="w-full sm:w-auto">
+            이전으로
+          </Button>
         </div>
       </div>
     </div>

@@ -1,430 +1,497 @@
-# Invoice Web - AI 개발 가이드
+# Invoice Web - AI 개발 표준
 
-## 프로젝트 개요
+## 개요
 
 **Invoice Web**은 Notion Database 기반의 인보이스 조회 및 PDF 다운로드 서비스입니다.
 
-- **프로젝트명**: Invoice Web
-- **기술 스택**: Next.js 15.5.3 + React 19 + TypeScript 5 + TailwindCSS v4 + Notion API
-- **주요 목표**: 클라이언트가 고유 링크를 통해 인보이스를 안전하게 확인하고 PDF 다운로드
+- **기술 스택**: Next.js 15.5.3, React 19, TypeScript 5, TailwindCSS v4, Notion API
+- **UI Framework**: shadcn/ui (new-york style)
+- **핵심 기능**: 인보이스 상세 조회, 상태별 시각 표시, PDF 다운로드
 
-## 프로젝트 구조
+---
+
+## 프로젝트 아키텍처
+
+### 디렉토리 구조
 
 ```
 src/
-├── app/                      # Next.js App Router
-│   ├── layout.tsx           # 루트 레이아웃
-│   ├── page.tsx             # 홈 페이지
-│   ├── globals.css          # 글로벌 스타일 (TailwindCSS + CSS 변수)
-│   ├── api/
-│   │   └── invoices/
-│   │       └── [id]/
-│   │           └── route.ts # 인보이스 API 엔드포인트
-│   └── invoices/
-│       └── [id]/
-│           └── page.tsx     # 인보이스 상세 페이지 (서버 컴포넌트)
-├── components/
-│   └── ui/                  # shadcn/ui 컴포넌트 (button, card, input, label)
-├── constants/               # 상수 관리 (중앙 관리)
+├── app/                    # Next.js App Router
+│   ├── api/invoices/[id]/  # API 라우트 (JSON 응답)
+│   ├── invoices/[id]/      # 상세 페이지 (서버 컴포넌트)
+│   ├── layout.tsx          # 루트 레이아웃
+│   └── globals.css         # 전역 스타일
+├── components/ui/          # shadcn/ui 컴포넌트 (수정 금지)
+├── constants/              # 상수 관리 (중앙 집중)
 │   ├── api.ts              # API 경로
 │   └── config.ts           # 환경 설정
-├── lib/                     # 공유 유틸리티 & 비즈니스 로직
-│   ├── notion.ts           # Notion 클라이언트 (싱글톤)
+├── lib/                    # 비즈니스 로직
+│   ├── notion.ts           # Notion 클라이언트
 │   ├── invoices.ts         # 인보이스 조회 로직
-│   └── utils.ts            # 유틸리티 함수
-└── types/                   # TypeScript 타입 정의
-    └── invoice.ts          # 인보이스 관련 타입
+│   └── utils.ts            # 유틸리티
+└── types/                  # 타입 정의
+    └── invoice.ts          # 인보이스 관련 타입/enum
 ```
+
+---
 
 ## 코드 표준
 
-### 네이밍 컨벤션
+### 1. 파일명 규칙
 
-| 대상       | 규칙                                       | 예시                                             |
-| ---------- | ------------------------------------------ | ------------------------------------------------ |
-| 파일명     | camelCase 또는 kebab-case (폴더 표준 따름) | `invoices.ts`, `[id]`                            |
-| 폴더명     | kebab-case                                 | `constants/`, `components/ui/`                   |
-| 함수명     | camelCase                                  | `getInvoiceById`, `mapNotionPageToInvoice`       |
-| 상수명     | UPPER_SNAKE_CASE                           | `INVOICE_STATUS`, `NOTION_PROPERTY_NAMES`        |
-| 변수명     | camelCase                                  | `invoiceId`, `clientName`                        |
-| 타입명     | PascalCase                                 | `Invoice`, `InvoiceStatus`, `InvoiceApiResponse` |
-| 인터페이스 | PascalCase                                 | `InvoiceItem`, `InvoiceApiResult`                |
+| 파일 타입           | 규칙              | 예시                        |
+| ------------------- | ----------------- | --------------------------- |
+| React 컴포넌트      | PascalCase        | `InvoiceDetail.tsx`         |
+| 페이지              | PascalCase (자동) | `[id]/page.tsx`             |
+| API 라우트          | route.ts          | `[id]/route.ts`             |
+| 유틸리티/라이브러리 | camelCase         | `getInvoiceById.ts`         |
+| 타입 파일           | 단수형            | `invoice.ts` (Invoice 타입) |
+| 상수 파일           | 전체 소문자       | `api.ts`, `config.ts`       |
 
-### 들여쓰기 및 포맷팅
+### 2. 변수명 규칙
 
-- **들여쓰기**: 2칸 (Prettier 설정됨)
-- **세미콜론**: 자동 추가 (Prettier)
-- **따옴표**: 작은따옴표 (Prettier)
-- **줄 길이**: 80자 제한
+- **변수/함수**: camelCase
+- **상수**: UPPER_SNAKE_CASE (또는 최상위 const는 camelCase)
+- **타입/Interface**: PascalCase
+- **Enum**: PascalCase (멤버는 UPPER_SNAKE_CASE)
 
-### 주석 작성
+### 3. 들여쓰기
 
-- 한국어로 작성
-- 함수/클래스 상단에 JSDoc 주석 추가
-- 복잡한 로직은 인라인 주석으로 설명
-- "TODO", "FIXME", "NOTE" 마크 사용 가능
+- **공백**: 2칸 (혼용 금지)
 
-## 파일별 상호작용 표준
+### 4. 주석
 
-### 필수 파일 일괄 수정 규칙
+- 한국어 사용
+- 선택: 비자명한 로직에만 작성
+- 포맷: `// 주석` 또는 `/** JSDoc */`
 
-| 상황                 | 수정해야 할 파일                               | 설명                                                |
-| -------------------- | ---------------------------------------------- | --------------------------------------------------- |
-| **API 경로 추가**    | `src/constants/api.ts` + `src/app/api/**`      | API_PATHS 상수에 경로 추가, 라우트 파일 생성        |
-| **Notion 속성 추가** | `src/lib/invoices.ts` + `src/types/invoice.ts` | NOTION_PROPERTY_NAMES, Invoice 인터페이스 동시 수정 |
-| **환경 변수 추가**   | `src/constants/config.ts` + `.env.local`       | config에서만 접근하도록 강제                        |
-| **에러 코드 추가**   | `src/lib/invoices.ts` (INVOICE_ERROR_CODES)    | 새 에러 타입 시 추가                                |
-| **상태 추가**        | `src/types/invoice.ts` (INVOICE_STATUS)        | Invoice 로직 수정 필요                              |
+---
 
-## 상수 및 설정 관리
+## 파일 상호작용 표준
 
-### src/constants/api.ts
+### 핵심 원칙
+
+**상수를 수정할 때는 해당 상수를 사용하는 모든 파일을 함께 검토 및 수정해야 합니다.**
+
+### 주요 상호작용 맵핑
+
+#### 1. API 경로 변경
+
+| 변경 파일              | 함께 수정할 파일                     | 사유                 |
+| ---------------------- | ------------------------------------ | -------------------- |
+| `src/constants/api.ts` | `src/app/api/invoices/[id]/route.ts` | API 경로 참조        |
+|                        | 클라이언트 코드 (fetch 호출)         | API 경로 동기화 필요 |
+
+**예**: `INVOICE_API_PATH` 수정 시 해당 경로를 사용하는 모든 fetch 호출 확인
+
+#### 2. 환경변수 추가
+
+| 변경 파일    | 함께 수정할 파일           | 사유                  |
+| ------------ | -------------------------- | --------------------- |
+| `.env.local` | `src/constants/config.ts`  | 환경변수 정의 및 검증 |
+|              | 사용처 파일 (lib/\*.ts 등) | config.ts 경유로 접근 |
+
+**예**: NOTION_API_KEY 추가 시 → config.ts에서 접근 → lib/notion.ts에서 사용
+
+#### 3. 인보이스 필드 추가
+
+| 변경 파일                        | 함께 수정할 파일                        | 순서 |
+| -------------------------------- | --------------------------------------- | ---- |
+| `src/types/invoice.ts`           | 1. 타입 정의                            |
+| `src/lib/invoices.ts`            | 2. NOTION_PROPERTY_NAMES (속성명)       |
+|                                  | 3. mapNotionPageToInvoice() (변환 로직) |
+| `src/app/invoices/[id]/page.tsx` | 4. 렌더링 코드                          |
+
+**예**: 새 필드 `department` 추가
 
 ```typescript
-export const API_PATHS = {
-  INVOICES: '/api/invoices',
-  INVOICE_DETAIL: (id: string) => `/api/invoices/${id}`,
-} as const
+// 1. types/invoice.ts: Invoice 인터페이스에 department 추가
+// 2. lib/invoices.ts: NOTION_PROPERTY_NAMES.department = "부서"
+// 3. lib/invoices.ts: mapNotionPageToInvoice()에서 page.properties.department 매핑
+// 4. page.tsx: <div>{invoice.department}</div> 렌더링
 ```
 
-**규칙**:
+#### 4. Notion DB 속성명 변경
 
-- API 경로는 반드시 이 파일에서만 관리
-- 하드코딩된 API 경로 금지
-- 함수형 경로는 파라미터와 함께 정의
+| 변경 파일      | 함께 수정할 파일                              | 사유               |
+| -------------- | --------------------------------------------- | ------------------ |
+| 실제 Notion DB | `src/lib/invoices.ts` (NOTION_PROPERTY_NAMES) | 속성명 상수 동기화 |
 
-### src/constants/config.ts
+**주의**: Notion DB의 실제 속성명과 NOTION_PROPERTY_NAMES의 값이 일치해야 함
+
+#### 5. 상태값(status) 변경
+
+| 변경 파일                                    | 함께 수정할 파일                                 | 사유               |
+| -------------------------------------------- | ------------------------------------------------ | ------------------ |
+| `src/types/invoice.ts` (INVOICE_STATUS enum) | `src/lib/invoices.ts`                            | status 값 검증     |
+|                                              | `src/app/invoices/[id]/page.tsx` (STATUS_STYLES) | 상태별 스타일 매핑 |
+
+---
+
+## 상수 관리 표준 (중앙 집중)
+
+### ❌ 금지 패턴
 
 ```typescript
-// 환경 변수는 이 파일을 통해서만 접근
-export const config = {
-  notionApiKey: process.env.NOTION_API_KEY!,
-  notionDatabaseId: process.env.NOTION_DATABASE_ID!,
-} as const
+// ❌ 하드코딩 금지
+const url = `/api/invoices/${id}`
+const status = 'PAID'
+const propertyName = '인보이스번호'
 ```
 
-**규칙**:
+### ✅ 필수 패턴
 
-- 환경 변수는 직접 접근 금지 (`process.env.XXX` 사용 금지)
-- `src/constants/config.ts`를 통해서만 접근
-- `.env.local` 파일은 git에 커밋 금지 (.gitignore 포함)
-
-### 에러 코드 관리 (src/lib/invoices.ts)
+#### 1. API 경로 (constants/api.ts)
 
 ```typescript
+// src/constants/api.ts
+export const API_ENDPOINTS = {
+  INVOICE: (id: string) => `/api/invoices/${id}`,
+  INVOICES_LIST: '/api/invoices',
+} as const
+
+// 사용처
+const url = API_ENDPOINTS.INVOICE(id)
+```
+
+#### 2. 환경 설정 (constants/config.ts)
+
+```typescript
+// src/constants/config.ts
+export const CONFIG = {
+  NOTION_API_KEY: process.env.NOTION_API_KEY || '',
+  NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID || '',
+} as const
+
+// ✅ 올바른 사용
+const client = new Client({ auth: CONFIG.NOTION_API_KEY })
+
+// ❌ 금지: process.env 직접 접근
+const client = new Client({ auth: process.env.NOTION_API_KEY })
+```
+
+#### 3. 상태값 (types/invoice.ts)
+
+```typescript
+// src/types/invoice.ts
+export enum INVOICE_STATUS {
+  UNPAID = 'UNPAID',
+  PAID = 'PAID',
+  OVERDUE = 'OVERDUE',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface Invoice {
+  status: INVOICE_STATUS;
+}
+
+// 사용처
+if (invoice.status === INVOICE_STATUS.PAID) { ... }
+```
+
+#### 4. Notion 속성명 (lib/invoices.ts)
+
+```typescript
+// src/lib/invoices.ts
+export const NOTION_PROPERTY_NAMES = {
+  invoiceNumber: '인보이스번호',
+  clientName: '고객명',
+  amount: '금액',
+  status: '상태',
+  // ... 기타 속성
+} as const
+
+// 사용처
+const invoiceNumber = page.properties[NOTION_PROPERTY_NAMES.invoiceNumber]
+```
+
+#### 5. 오류 코드 (lib/invoices.ts)
+
+```typescript
+// src/lib/invoices.ts
 export const INVOICE_ERROR_CODES = {
   NOT_FOUND: 'INVOICE_NOT_FOUND',
   UNAUTHORIZED: 'UNAUTHORIZED',
-  RATE_LIMITED: 'RATE_LIMITED',
+  RATE_LIMIT: 'RATE_LIMIT_EXCEEDED',
   SERVER_ERROR: 'SERVER_ERROR',
 } as const
 ```
 
-**규칙**:
+---
 
-- 에러 타입은 상수 객체로 관리
-- 에러 코드는 `UPPER_SNAKE_CASE`
-- 에러 메시지는 한국어로 통일
+## 상태 분기 표준
 
-## 타입 정의 표준 (src/types/invoice.ts)
+### ❌ 금지 패턴
 
 ```typescript
-// 1. 상태 상수 + 타입
-export const INVOICE_STATUS = {
-  UNPAID: 'UNPAID',
-  PAID: 'PAID',
-  OVERDUE: 'OVERDUE',
-  CANCELLED: 'CANCELLED',
-} as const
-
-export type InvoiceStatus = (typeof INVOICE_STATUS)[keyof typeof INVOICE_STATUS]
-
-// 2. 메인 인터페이스
-export interface Invoice {
-  id: string
-  invoiceNumber: string
-  clientName: string
-  amount: number
-  issueDate: string
-  dueDate: string
-  status: InvoiceStatus
-  description?: string
-  items?: InvoiceItem[]
-}
-
-// 3. API 응답 타입
-export interface InvoiceApiResponse {
-  success: true
-  data: Invoice
-}
-
-export type InvoiceApiResult = InvoiceApiResponse | InvoiceApiErrorResponse
+// ❌ if/switch로 매직 스트링 비교
+if (status === 'PAID') { ... }
+else if (status === 'UNPAID') { ... }
 ```
 
-**규칙**:
-
-- 모든 API 응답은 `success` 필드 포함
-- 선택적 필드는 `?` 마크 사용
-- 유니온 타입은 `InvoiceApiResult` 형태로 정의
-
-## Notion API 통합 표준
-
-### 속성명 매핑 (src/lib/invoices.ts)
+### ✅ 필수 패턴 (Map 객체)
 
 ```typescript
-export const NOTION_PROPERTY_NAMES = {
-  invoiceNumber: '인보이스번호', // Notion DB 실제 컬럼명
-  clientName: '고객명',
-  amount: '금액',
-  issueDate: '발급일',
-  dueDate: '만기일',
-  status: '상태',
-  description: '설명',
-} as const
-```
-
-**규칙**:
-
-- Notion Database의 실제 컬럼명과 일치해야 함
-- 코드에서는 영어 키, 값은 Notion 실제 컬럼명
-- 속성명 변경 시 `NOTION_PROPERTY_NAMES`만 수정하면 모든 쿼리 영향
-
-### 데이터 추출 헬퍼 함수 (src/lib/invoices.ts)
-
-```typescript
-function extractText(property?: any): string // 텍스트 타입
-function extractNumber(property?: any): number // 숫자 타입
-function extractDate(property?: any): string // 날짜 타입
-```
-
-**규칙**:
-
-- Notion 속성 추출은 반드시 이 헬퍼 함수 사용
-- 직접 접근 금지 (`properties.XXX?.value` 금지)
-
-### Notion 클라이언트 (src/lib/notion.ts)
-
-**규칙**:
-
-- 싱글톤 패턴으로 클라이언트 관리
-- `getNotionClient()` 함수로만 접근
-
-## API 라우트 표준 (src/app/api/invoices/[id]/route.ts)
-
-```typescript
-// GET /api/invoices/[id]
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  try {
-    const { id } = await params // Next.js 15: 비동기 params
-    const invoice = await getInvoiceById(id)
-    return Response.json({
-      success: true,
-      data: invoice,
-    })
-  } catch (error: any) {
-    // 에러 코드별 HTTP 상태 코드 매핑
-    const statusMap = {
-      [INVOICE_ERROR_CODES.NOT_FOUND]: 404,
-      [INVOICE_ERROR_CODES.UNAUTHORIZED]: 401,
-      [INVOICE_ERROR_CODES.RATE_LIMITED]: 429,
-    }
-    return Response.json(
-      {
-        success: false,
-        error: {
-          code: error.code,
-          message: error.message,
-        },
-      },
-      { status: statusMap[error.code] ?? 500 }
-    )
-  }
-}
-```
-
-**규칙**:
-
-- 미사용 파라미터는 언더스코어로 표시 (`_request`)
-- Next.js 15.5.3: `params`는 Promise로 감싸야 함 (`await params`)
-- 에러 응답은 `{ success: false, error: { code, message } }` 형식
-- HTTP 상태 코드를 명확히 매핑
-
-## 페이지 컴포넌트 표준 (src/app/invoices/[id]/page.tsx)
-
-```typescript
-// 서버 컴포넌트 (기본값)
-export default async function InvoicePage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
-  const invoice = await getInvoiceById(id)
-
-  return (
-    // UI 렌더링
-  )
-}
-
-// 동적 메타데이터
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  return {
-    title: `Invoice #${invoice.invoiceNumber}`,
-  }
-}
-```
-
-**규칙**:
-
-- 서버 컴포넌트로 데이터 페칭 처리
-- `async`/`await` 사용
-- 에러는 Error Boundary로 처리
-- 동적 메타데이터는 `generateMetadata` 함수로 정의
-
-## UI 컴포넌트 표준
-
-### shadcn/ui 컴포넌트
-
-- **경로**: `src/components/ui/`
-- **포함**: Button, Card, Input, Label 등
-- **스타일**: TailwindCSS + CSS 변수 (new-york style)
-- **아이콘**: Lucide Icons 사용
-
-**규칙**:
-
-- shadcn 컴포넌트는 수정 금지 (업데이트 호환성)
-- 커스터마이징이 필요하면 새로운 컴포넌트 파일 생성
-- 공통 스타일은 globals.css에서만 정의
-
-### Tailwind CSS 클래스
-
-```typescript
-// ✅ 올바른 사용
-className = 'flex items-center justify-between gap-4'
-
-// ❌ 사용 금지 (매직 값)
-className = 'flex items-center gap-[16px]'
-```
-
-**규칙**:
-
-- Tailwind 기본 스케일 사용 (gap-4 = 1rem)
-- 임의 값 사용 금지
-
-## 상태 분기 처리 표준
-
-```typescript
-// Map 객체 사용 (권장)
+// src/app/invoices/[id]/page.tsx
 const STATUS_STYLES = {
-  PAID: 'bg-green-100 text-green-800',
-  UNPAID: 'bg-yellow-100 text-yellow-800',
-  OVERDUE: 'bg-red-100 text-red-800',
-  CANCELLED: 'bg-gray-100 text-gray-800',
+  [INVOICE_STATUS.PAID]: {
+    label: '납부완료',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-800',
+    badgeColor: 'bg-green-500',
+  },
+  [INVOICE_STATUS.UNPAID]: {
+    label: '미납',
+    bgColor: 'bg-yellow-100',
+    textColor: 'text-yellow-800',
+    badgeColor: 'bg-yellow-500',
+  },
+  // ...
 } as const
 
-const className = STATUS_STYLES[invoice.status]
+// 사용처
+const styles = STATUS_STYLES[invoice.status]
+```
 
-// ❌ 사용 금지 (if/switch 최소화)
-if (status === 'PAID') {
-  // ...
-} else if (status === 'UNPAID') {
-  // ...
+---
+
+## Next.js 15 특수성
+
+### 1. 비동기 Params
+
+Next.js 15에서 route params는 Promise입니다.
+
+```typescript
+// ✅ 올바른 타입
+interface Params {
+  id: string
+}
+export async function Page({ params }: { params: Promise<Params> }) {
+  const { id } = await params
+}
+
+// API Route에서도 동일
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+}
+
+// ❌ 잘못된 사용 (Promise를 기다리지 않음)
+const id = params.id // TypeError
+```
+
+### 2. 서버 컴포넌트
+
+- `src/app/invoices/[id]/page.tsx`는 기본적으로 서버 컴포넌트
+- 직접 DB/API 호출 가능
+- `'use client'` 지시문 없음
+
+### 3. API 라우트
+
+- `src/app/api/invoices/[id]/route.ts`는 자동으로 Route Handler
+- 요청/응답 처리 필요
+
+---
+
+## Notion API 연동 표준
+
+### 1. Notion 클라이언트 (lib/notion.ts)
+
+```typescript
+// lib/notion.ts
+import { Client } from '@notionhq/client'
+import { CONFIG } from '@/constants/config'
+
+let notionClient: Client | null = null
+
+export function getNotionClient(): Client {
+  if (!notionClient) {
+    notionClient = new Client({ auth: CONFIG.NOTION_API_KEY })
+  }
+  return notionClient
 }
 ```
 
-**규칙**:
+### 2. 데이터 조회 (lib/invoices.ts)
 
-- 상태 분기는 Map 객체로 관리
-- if/switch 문 최소화
-- 여러 곳에서 사용되는 분기 로직은 constants에서 관리
+```typescript
+// 세 가지 조회 방식 제공
+- getInvoiceById(id): 페이지 ID로 직접 조회 (빠름)
+- getInvoiceByNumber(number): 인보이스 번호로 검색 (필터링)
+- getAllInvoices(cursor?): 전체 목록 + 페이지네이션
+```
 
-## 금지 사항 (⛔ Prohibited Actions)
+### 3. 데이터 변환
 
-| 금지 사항                                         | 이유                       | 대체 방안                                            |
-| ------------------------------------------------- | -------------------------- | ---------------------------------------------------- |
-| `process.env.NOTION_API_KEY` 직접 접근            | 환경 변수 중앙 관리        | `src/constants/config.ts` 사용                       |
-| API 경로 하드코딩 (`'/api/invoices/'`)            | 경로 일관성                | `API_PATHS` 상수 사용                                |
-| switch/if로 상태 분기                             | 코드 중복 및 유지보수성    | Map 객체 사용                                        |
-| Notion 속성에 직접 접근 (`properties.xxx?.value`) | 데이터 추출 오류           | `extractText()`, `extractNumber()` 등 헬퍼 함수 사용 |
-| shadcn/ui 컴포넌트 수정                           | 업데이트 충돌              | 새로운 컴포넌트 파일 생성                            |
-| 타입스크립트 `any` 타입 광범위 사용               | 타입 안전성                | 명시적 타입 정의 또는 `unknown` 사용                 |
-| `.env.local` git 커밋                             | 보안 위험                  | `.gitignore`에 이미 포함                             |
-| 임의 Tailwind 값 사용 (`gap-[16px]`)              | 디자인 일관성              | 기본 스케일 사용                                     |
-| 서버 컴포넌트에서 상태 관리 (`useState`)          | Next.js 서버 컴포넌트 제약 | `'use client'` 지시문 + 클라이언트 컴포넌트          |
+```typescript
+// mapNotionPageToInvoice(page: PageObjectResponse): Invoice
+// - Notion 페이지 객체 → Invoice 타입으로 변환
+// - 타입 검증 및 에러 처리 포함
+```
+
+### 4. 에러 처리
+
+```typescript
+// INVOICE_ERROR_CODES 사용
+- NOT_FOUND: 인보이스 미발견 (404)
+- UNAUTHORIZED: Notion 인증 실패 (401)
+- RATE_LIMIT_EXCEEDED: API 할당량 초과 (429)
+- SERVER_ERROR: 기타 서버 오류 (500)
+```
+
+---
+
+## 금지 사항 (Prohibited Actions)
+
+### 1. 하드코딩 ❌
+
+```typescript
+// ❌ 금지
+const path = '/api/invoices/'
+const notionKey = 'your-key-here'
+const status = 'PAID'
+
+// ✅ 필수
+import { API_ENDPOINTS } from '@/constants/api'
+import { CONFIG } from '@/constants/config'
+import { INVOICE_STATUS } from '@/types/invoice'
+```
+
+### 2. 환경변수 직접 접근 ❌
+
+```typescript
+// ❌ 금지
+process.env.NOTION_API_KEY
+
+// ✅ 필수
+import { CONFIG } from '@/constants/config'
+CONFIG.NOTION_API_KEY
+```
+
+### 3. shadcn/ui 컴포넌트 수정 ❌
+
+- `src/components/ui/` 내 파일은 읽기 전용
+- 버그: 업스트림 업데이트로 덮어씌워짐
+- 커스터마이징: wrapper 컴포넌트 생성
+
+```typescript
+// ❌ 금지
+// src/components/ui/button.tsx 수정
+
+// ✅ 필수
+// src/components/InvoiceButton.tsx (wrapper)
+import { Button } from '@/components/ui/button';
+
+export function InvoiceButton(props) {
+  return <Button {...props} className="custom-class" />;
+}
+```
+
+### 4. 매직 Number/String ❌
+
+```typescript
+// ❌ 금지
+if (items.length > 10) { ... }
+const timeout = 5000;
+const currency = 'KRW';
+
+// ✅ 필수
+export const PAGINATION_LIMIT = 10;
+export const API_TIMEOUT_MS = 5000;
+export const CURRENCY = 'KRW' as const;
+```
+
+### 5. if/switch 남발 ❌
+
+```typescript
+// ❌ 금지 (상태별 분기)
+if (status === 'PAID') {
+  return <GreenBadge />;
+} else if (status === 'UNPAID') {
+  return <YellowBadge />;
+}
+
+// ✅ 필수 (Map 사용)
+const BADGE_MAP = { [INVOICE_STATUS.PAID]: GreenBadge, ... };
+return createElement(BADGE_MAP[status]);
+```
+
+### 6. 런타임에 타입 검증 없이 API 응답 사용 ❌
+
+```typescript
+// ❌ 금지
+const invoice = data // Notion 응답을 바로 사용
+
+// ✅ 필수
+const invoice = mapNotionPageToInvoice(data) // 변환 + 타입 검증
+```
+
+---
 
 ## AI 의사결정 기준
 
-### 기능 추가 시 우선순위
+### 1. 파일 생성 vs 수정
 
-1. **타입 정의**: `src/types/invoice.ts`에 먼저 정의
-2. **상수 정의**: `src/constants/`, `src/lib/invoices.ts`에 추가
-3. **로직 구현**: `src/lib/invoices.ts` 또는 라우트 파일
-4. **UI 렌더링**: 페이지/컴포넌트에서 표시
+| 상황                         | 판단                                         |
+| ---------------------------- | -------------------------------------------- |
+| 새 기능 (새 라우트, 새 타입) | 파일 생성                                    |
+| 기존 기능 개선/버그 수정     | 파일 수정                                    |
+| 상수 추가                    | constants/ 폴더에 추가 또는 기존 파일에 병합 |
 
-### 파일 변경 영향도 분석
+### 2. 파일 위치 결정
 
-```
-src/types/invoice.ts (타입 변경)
-  ↓ 영향
-- src/lib/invoices.ts (mapNotionPageToInvoice 함수)
-- src/app/api/invoices/[id]/route.ts (응답 타입)
-- src/app/invoices/[id]/page.tsx (렌더링 로직)
-```
+| 내용           | 폴더               |
+| -------------- | ------------------ |
+| React 컴포넌트 | `src/components/`  |
+| API 라우트     | `src/app/api/`     |
+| 페이지         | `src/app/[route]/` |
+| 비즈니스 로직  | `src/lib/`         |
+| 타입/Enum      | `src/types/`       |
+| 상수           | `src/constants/`   |
 
-### 모호한 상황에서의 판단
+### 3. Notion 필드 추가 우선순위
 
-| 상황                   | 판단 기준                                                | 예시                                           |
-| ---------------------- | -------------------------------------------------------- | ---------------------------------------------- |
-| 새 API 엔드포인트 추가 | `API_PATHS` + `src/app/api/` 라우트 파일                 | `src/constants/api.ts` 수정 + 라우트 파일 생성 |
-| Notion DB 컬럼 추가    | `NOTION_PROPERTY_NAMES` 수정 + `Invoice` 인터페이스 수정 | 2개 파일 동시 수정                             |
-| 새 상태 추가           | `INVOICE_STATUS` + `Invoice` + 분기 로직 수정            | `src/types/invoice.ts` + 관련 로직             |
-| 에러 핸들링 추가       | `INVOICE_ERROR_CODES` 추가 + 라우트에서 처리             | `src/lib/invoices.ts` + 라우트 파일            |
+1. Notion DB에서 실제 속성명 확인
+2. `types/invoice.ts`에 타입 추가
+3. `lib/invoices.ts`의 NOTION_PROPERTY_NAMES에 추가
+4. `lib/invoices.ts`의 mapNotionPageToInvoice()에서 매핑
+5. 사용처 페이지에 렌더링 추가
+6. 테스트 (빌드, 린트)
 
-## 개발 워크플로우
+### 4. 에러 처리
 
-### 커밋 메시지
+- Notion API 에러: INVOICE_ERROR_CODES 사용
+- HTTP 상태 코드: 404, 401, 429, 500 구분
+- 클라이언트 에러: UI 메시지로 표시
 
-- 한국어로 작성
-- 컨벤셔널 커밋 형식
-- 예: `feat: 인보이스 상태별 필터링 기능 추가`, `fix: Notion API 응답 파싱 버그 해결`
+---
 
-### 린트 및 포맷팅
+## 체크리스트
 
-```bash
-npm run lint      # ESLint 검사
-npm run format    # Prettier 포맷팅
-npm run build     # 빌드 테스트
-```
+### 파일 수정 후
 
-**규칙**:
+- [ ] 타입 검증: `npm run build` ✅
+- [ ] 린트 검사: `npm run lint` ✅
+- [ ] 관련 파일 동기화 확인
+- [ ] 상수 사용 규칙 준수 확인
+- [ ] 새 파일 생성 시 올바른 폴더 위치 확인
 
-- Pre-commit 훅으로 자동 실행 (lint-staged)
-- `npm run build`로 빌드 검증 필수
+### 새 기능 추가 후
 
-## 주요 의존성
+- [ ] 타입 먼저 정의 (types/)
+- [ ] 상수 정의 (constants/)
+- [ ] 로직 구현 (lib/ 또는 app/)
+- [ ] 렌더링 (page.tsx)
+- [ ] 빌드/린트 통과
+- [ ] 모든 관련 파일 동기화
 
-| 패키지           | 버전     | 용도           |
-| ---------------- | -------- | -------------- |
-| next             | 15.5.3   | 프레임워크     |
-| react            | 19.1.0   | UI 라이브러리  |
-| typescript       | ^5       | 정적 타입 분석 |
-| tailwindcss      | v4       | 스타일링       |
-| @notionhq/client | ^2.3.0   | Notion API     |
-| react-hook-form  | ^7.52.0  | 폼 관리        |
-| zod              | ^3.23.8  | 스키마 검증    |
-| lucide-react     | ^0.407.0 | 아이콘         |
-| shadcn           | ^4.0.0   | UI 컴포넌트    |
+---
 
 ## 참고 문서
 
-- `README.md` - 설치 및 사용 가이드
-- `docs/PRD.md` - 제품 요구사항 명세
-- `docs/ROADMAP.md` - 개발 로드맵
 - `CLAUDE.md` - 프로젝트 개발 지침
+- `docs/PRD.md` - 제품 요구사항
+- `docs/ROADMAP.md` - 개발 로드맵
+- `README.md` - 설치/사용 가이드
